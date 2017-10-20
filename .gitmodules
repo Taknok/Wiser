@@ -1,0 +1,3 @@
+[submodule "OBDSimulator"]
+	path = OBDSimulator
+	url = https://github.com/pestadieu/OBDSimulator
