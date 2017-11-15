@@ -33,5 +33,5 @@ COPY --from=builder /hackdash/dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
 
 
-# docker build -t hackdash/app . 
-# docker run -d -p 8080:80 hackdash/app
+# docker build -t wiser/web . 
+# docker run -d -p 8080:80 wiser/web
