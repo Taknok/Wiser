@@ -1,0 +1,10 @@
+version: '2' # specify docker-compose version
+
+# Define the services/containers to be run
+services:
+
+  dashboard:
+    build: ./
+    ports:
+    - "8080:80"
+
