@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -32,13 +33,23 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 	log.Println(t)
+
+	//Convert string to int
+	speedInt, err := strconv.Atoi(t.Params.Speed)
+	if err != nil {
+		panic(err)
+	}
+
+	//intelligence
+	if speedInt > 10 {
+		go postToRsu(t.IdVehicule, t.IdRsu)
+		go postToWeb(t.IdVehicule, t.IdRsu)
+	}
 }
 
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/wiser/rsu/{idrsu}/cars", handleRsu)
-	router.HandleFunc("/u/{name}", GetUser).Methods("GET")
-	router.HandleFunc("/new", NewUser).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8082", router))
 }
