@@ -11,6 +11,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var MAXSPEED int = 20
+
 type params struct {
 	Speed string
 }
@@ -41,7 +43,7 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	//intelligence
-	if speedInt > 10 {
+	if speedInt > MAXSPEED {
 		go postToRsu(t.IdVehicule, t.IdRsu)
 		go postToWeb(t.IdVehicule, t.IdRsu)
 	}
