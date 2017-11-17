@@ -38,4 +38,12 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/wiser/rsu/{idrsu}/cars", handleRsu)
 	log.Fatal(http.ListenAndServe(":8082", router))
+
+	handler := rest.ResourceHandler{}
+	handler.SetRoutes(
+	  rest.Route{"Get","/u/:name", GetUser},
+	  rest.Route{"Post","/new", NewUser},
+	)
+	fmt.Println("Run on 127.0.0.1:8090")
+	http.ListenAndServe(":8090", &handler)
 }

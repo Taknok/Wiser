@@ -4,7 +4,22 @@ version: '2' # specify docker-compose version
 services:
 
   dashboard:
-    build: ./
+    build: web
     ports:
     - "8080:80"
+    links:
+    - controller
+  
+  controller:
+    build: ./
+    ports:
+    - "8090:8090"
+    links:
+    - mongo
 
+  mongo:
+    image: mongo:latest
+    ports:
+    - '27017:27017'
+    volumes:
+- './mongo:/data/db'
