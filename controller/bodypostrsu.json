@@ -1,0 +1,13 @@
+{
+"apiVersion":"1.0",
+"typeOfVehicule":"car",
+"idVehicule":".....",
+"idRsu":".....",
+"date":"2017-11-06T16:34:41:000Z",
+"params":{
+         },
+"actions":{
+          "stop":"true"
+         }
+}
+

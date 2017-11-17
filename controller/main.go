@@ -1,49 +1,41 @@
+//curl -H "Content-Type: application/json" --data @bodytest.json http://localhost:8082/wiser/rsu/123/cars
+
 package main
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 )
 
-type Car struct {
-	typeOfVehicule string  `json:"typeOfVehicule,omitempty"`
-	idVehicule     string  `json:"id,omitempty"`
-	date           string  `json:"date,omitempty"`
-	Params         *Params `json:"params,omitempty"`
-}
-type Params struct {
-	speed string `json:"speed,omitempty"`
+type params struct {
+	Speed string
 }
 
-var cars []Car
-
-// our main function
-func main() {
-
-	cars = append(cars, Car{typeOfVehicule: "car", idVehicule: "1", date: time.Now().Format(time.RFC3339), Params: &Params{speed: "20"}})
-	cars = append(cars, Car{typeOfVehicule: "car", idVehicule: "2", date: time.Now().Format(time.RFC3339), Params: &Params{speed: "20"}})
-
-	router := mux.NewRouter()
-	router.HandleFunc("/wiser/rsu/{idrsu}/cars", GetRsu).Methods("GET")
-	router.HandleFunc("/wiser/rsu/{idrsu}/cars/stop", PostAction).Methods("POST")
-	router.HandleFunc("/wiser/web/cars/stop", PostInformation).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8000", router))
+type carsInfo struct {
+	ApiVersion     string
+	TypeOfVehicule string
+	IdVehicule     string
+	IdRsu          string
+	Date           string
+	Params         params
 }
 
-func GetRsu(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	for _, item := range cars {
-		if item.idVehicule == params["idrsu"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
+func handleRsu(rw http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	var t carsInfo
+	err := decoder.Decode(&t)
+	if err != nil {
+		panic(err)
 	}
-	json.NewEncoder(w).Encode(&Car{})
+	defer req.Body.Close()
+	log.Println(t)
 }
 
-func PostAction(w http.ResponseWriter, r *http.Request)      {}
-func PostInformation(w http.ResponseWriter, r *http.Request) {}
+func main() {
+	router := mux.NewRouter()
+	router.HandleFunc("/wiser/rsu/{idrsu}/cars", handleRsu)
+	log.Fatal(http.ListenAndServe(":8082", router))
+}
