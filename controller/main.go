@@ -42,7 +42,7 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	//Intelligence algo
-	go intelligence(speedInt, t.IdVehicule, t.IdRsu)
+	go intelligence(speedInt, t.IdVehicule, t.IdRsu, t.Date)
 }
 
 func main() {

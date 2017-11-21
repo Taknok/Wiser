@@ -6,13 +6,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 )
 
-func postToRsu(idVehicule string, idRsu string) {
+func postToRsu(idVehicule string, idRsu string, date string) {
 
 	apiVersion := "1.0"
-	date := time.Now().Format(time.RFC3339)
+	//date := time.Now().Format(time.RFC3339)
 	stop := "true"
 
 	var jsonStr = []byte(`{
@@ -60,10 +59,10 @@ func postToRsu(idVehicule string, idRsu string) {
 	}
 }
 
-func postToWeb(idVehicule string, idRsu string) {
+func postToWeb(idVehicule string, idRsu string, date string) {
 
 	apiVersion := "1.0"
-	date := time.Now().Format(time.RFC3339)
+	//date := time.Now().Format(time.RFC3339)
 	stop := "true"
 
 	var jsonStr = []byte(`{
