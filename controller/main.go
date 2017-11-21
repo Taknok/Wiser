@@ -1,10 +1,10 @@
 //curl -H "Content-Type: application/json" --data @bodytest.json http://localhost:8082/wiser/rsu/123/cars
-// MongoDB installation: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -48,10 +48,12 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 func main() {
 	// Database MongoDB need to install it and launch first
 	mongoDatabase()
+	defer session.Close()
 
 	//Router
 	router := mux.NewRouter()
 	router.HandleFunc("/wiser/rsu/{idrsu}/cars", handleRsu)
+	fmt.Println("listenning on port 8082")
 
 	log.Fatal(http.ListenAndServe(":8082", router))
 }
