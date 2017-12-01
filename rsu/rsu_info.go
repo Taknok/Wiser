@@ -53,7 +53,7 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 				 }
 		}`)
 
-	url := "http://localhost:8082/wiser/rsu/" + t.IdRsu + "/cars"
+	url := "http://localhost:8082/wiser/controller/" + t.IdRsu + "/cars"
 	fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -76,6 +76,6 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 func main() {
 	log.Println(" -- MAIN --")
 	router := mux.NewRouter()
-	router.HandleFunc("/wiser/cars", forward2Controller)
+	router.HandleFunc("/wiser/rsu", forward2Controller)
 	log.Fatal(http.ListenAndServe(":8081", router))
 }

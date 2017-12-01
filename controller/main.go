@@ -52,7 +52,7 @@ func main() {
 
 	//Router
 	router := mux.NewRouter()
-	router.HandleFunc("/wiser/rsu/{idrsu}/cars", handleRsu)
+	router.HandleFunc("/wiser/controller/{idrsu}/cars", handleRsu)
 	fmt.Println("listenning on port 8082")
 
 	log.Fatal(http.ListenAndServe(":8082", router))
