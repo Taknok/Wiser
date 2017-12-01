@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
+	"strings"
 )
 
 func postToRsu(idVehicule string, idRsu string, date string) {
@@ -27,20 +27,22 @@ func postToRsu(idVehicule string, idRsu string, date string) {
 				 }
 		}`)
 
-	idRsuInt, err := strconv.Atoi(idRsu)
 	if err != nil {
 		panic(err)
 	}
 
-	//getRsusIDIP(idRsu)
+	//handle multiple RSU
+	rsuIds, rsuIps := getRsusIDIP(idRsu)
+
+	rsuIdsstringsplit := strings.Split(rsuIds, "/")
+	rsuIpsstringsplit := strings.Split(rsuIps, "/")
+	//fmt.Println(rsuIdsstringsplit)
+	//fmt.Println(rsuIpsstringsplit)
 
 	//handle multiple RSU
-	for index := -1; index < 1; index++ {
+	for index := 0; index < len(rsuIdsstringsplit); index++ {
 
-		newIdRsuInt := idRsuInt + index
-		newIdRsuString := strconv.Itoa(newIdRsuInt)
-
-		url := "http://localhost:8080/wiser/rsu/" + newIdRsuString + "/cars/stop"
+		url := "http://" + rsuIpsstringsplit[index] + ":8080/wiser/rsu/" + rsuIdsstringsplit[index] + "/cars/stop"
 		fmt.Println("URL:>", url)
 
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -50,6 +52,7 @@ func postToRsu(idVehicule string, idRsu string, date string) {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
+			fmt.Printf("Error try send to RSU\n")
 			panic(err)
 		}
 		defer resp.Body.Close()
@@ -90,6 +93,7 @@ func postToWeb(idVehicule string, idRsu string, date string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("Error try to send to web server")
 		panic(err)
 	}
 	defer resp.Body.Close()

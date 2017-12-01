@@ -86,57 +86,13 @@ func mongoDatabase() {
 	}
 
 	//insert RSU info
-	err = r.Insert(&Rsus{RsuID: "1234", RsuIP: "192.168.0.1", localisation: "1", RsuNeighbourId: "123/456", RsuNeighbourIp: "192.168.1.1/192.168.1.2"})
+	err = r.Insert(&Rsus{RsuID: "1", RsuIP: "192.168.1.0", localisation: "1", RsuNeighbourId: "2/3/", RsuNeighbourIp: "192.168.1.1/192.168.1.2/"})
 	if err != nil {
 		panic(err)
 	}
 	//printDataRsus()
-	getRsusIDIP("1234")
-	/*
+	//getRsusIDIP("1234")
 
-		// Insert Datas
-		err = c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: "21", Stop: "false"},
-			&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "34556", Date: "21/10/2018", Speed: "21", Stop: "false"})
-
-		if err != nil {
-			panic(err)
-		}
-	*/
-	/*
-		// Query One
-		result := Cars{}
-		err = c.Find(bson.M{"idvehicule": "123", "idrsu": "3455"}).Select(bson.M{"stop": "false"}).One(&result)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Vehicule", result)
-
-		// Query All
-		var results []Cars
-		err = c.Find(bson.M{"idvehicule": "123"}).Sort("-date").All(&results)
-
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Results All: ", results)
-	*/
-	/*
-		// Update
-		colQuerier := bson.M{"name": "Ale"}
-		change := bson.M{"$set": bson.M{"phone": "+86 99 8888 7777", "timestamp": time.Now()}}
-		err = c.Update(colQuerier, change)
-		if err != nil {
-			panic(err)
-		}
-
-		// Query All
-		err = c.Find(bson.M{"name": "Ale"}).Sort("-timestamp").All(&results)
-
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Results All: ", results)
-	*/
 }
 
 func insertData(speedInt int, idVehicule string, idRsu string, date string, stop string) {
@@ -180,15 +136,61 @@ func getRsusIDIP(idRsu string) (string, string) {
 		if results[index].RsuID == idRsu {
 			RsuNeighbourIdString := results[index].RsuNeighbourId
 			RsuNeighbourIpString := results[index].RsuNeighbourIp
+			// add id and ip of current rsu
+			RsuNeighbourIdString += results[index].RsuID
+			RsuNeighbourIpString += results[index].RsuIP
 
-			//tab := strings.Split(results[index].RsuNeighbourId, "/")
 			return RsuNeighbourIdString, RsuNeighbourIpString
 		} else {
 			fmt.Printf("Problem")
 		}
 	}
 	return "", ""
-	//s := strings.Split(results[0].RsuNeighbourId, "/")
-	//test1, test2 := s[0], s[1]
-	//fmt.Println(test1, test2)
+
 }
+
+/*
+
+	// Insert Datas
+	err = c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: "21", Stop: "false"},
+		&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "34556", Date: "21/10/2018", Speed: "21", Stop: "false"})
+
+	if err != nil {
+		panic(err)
+	}
+*/
+/*
+	// Query One
+	result := Cars{}
+	err = c.Find(bson.M{"idvehicule": "123", "idrsu": "3455"}).Select(bson.M{"stop": "false"}).One(&result)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Vehicule", result)
+
+	// Query All
+	var results []Cars
+	err = c.Find(bson.M{"idvehicule": "123"}).Sort("-date").All(&results)
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Results All: ", results)
+*/
+/*
+	// Update
+	colQuerier := bson.M{"name": "Ale"}
+	change := bson.M{"$set": bson.M{"phone": "+86 99 8888 7777", "timestamp": time.Now()}}
+	err = c.Update(colQuerier, change)
+	if err != nil {
+		panic(err)
+	}
+
+	// Query All
+	err = c.Find(bson.M{"name": "Ale"}).Sort("-timestamp").All(&results)
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Results All: ", results)
+*/

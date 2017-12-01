@@ -1,6 +1,6 @@
 package main
 
-var MAXSPEED int = 20
+var MAXSPEED int = 15
 
 func intelligence(speedInt int, idVehicule string, idRsu string, date string) {
 	//intelligence
