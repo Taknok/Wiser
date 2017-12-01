@@ -1,4 +1,4 @@
-//curl -H "Content-Type: application/json" --data @bodytest.json http://localhost:8082/wiser/rsu/123/cars
+//curl -H "Content-Type: application/json" --data @bodytest.json http://localhost:8082/wiser/controller/123/cars
 
 package main
 

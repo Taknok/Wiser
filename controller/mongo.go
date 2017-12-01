@@ -13,6 +13,7 @@ var (
 	IsDrop  = true
 	session *mgo.Session
 	c       *mgo.Collection
+	r       *mgo.Collection
 	err     error
 )
 
@@ -24,6 +25,15 @@ type Cars struct {
 	Date           string
 	Speed          int
 	Stop           string
+}
+
+type Rsus struct {
+	ID             bson.ObjectId `bson:"_id,omitempty"`
+	RsuID          string
+	RsuIP          string
+	localisation   string
+	RsuNeighbourId string
+	RsuNeighbourIp string
 }
 
 func mongoDatabase() {
@@ -41,11 +51,11 @@ func mongoDatabase() {
 		}
 	}
 
-	// Collection WISER
+	// Collection WISER/ carsinfo
 	c = session.DB("WISER").C("carsinfo")
 
 	// Index  Key in min !
-	index := mgo.Index{
+	indexCars := mgo.Index{
 		Key:        []string{"idvehicule", "idrsu", "date"},
 		Unique:     true,
 		DropDups:   true,
@@ -53,11 +63,35 @@ func mongoDatabase() {
 		Sparse:     true,
 	}
 
-	err = c.EnsureIndex(index)
+	err = c.EnsureIndex(indexCars)
 	if err != nil {
 		panic(err)
 	}
 
+	// Collection WISER/ rsusinfo
+	r = session.DB("WISER").C("rsusinfo")
+
+	// Index  Key in min !
+	indexRsu := mgo.Index{
+		Key:        []string{"id", "rsuid"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+
+	err = r.EnsureIndex(indexRsu)
+	if err != nil {
+		panic(err)
+	}
+
+	//insert RSU info
+	err = r.Insert(&Rsus{RsuID: "1234", RsuIP: "192.168.0.1", localisation: "1", RsuNeighbourId: "123/456", RsuNeighbourIp: "192.168.1.1/192.168.1.2"})
+	if err != nil {
+		panic(err)
+	}
+	//printDataRsus()
+	getRsusIDIP("1234")
 	/*
 
 		// Insert Datas
@@ -106,15 +140,16 @@ func mongoDatabase() {
 }
 
 func insertData(speedInt int, idVehicule string, idRsu string, date string, stop string) {
-	err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: 21, Stop: "false"})
-	//err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: idVehicule, IdRsu: idRsu, Date: date, Speed: speedInt, Stop: stop})
+	//err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: 21, Stop: "false"})
+	err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: idVehicule, IdRsu: idRsu, Date: date, Speed: speedInt, Stop: stop})
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error 2 times same data in DB\n")
+		//panic(err)
 	}
-	printData()
+	printDataCars()
 }
 
-func printData() {
+func printDataCars() {
 	var results []Cars
 
 	err := c.Find(nil).All(&results)
@@ -123,4 +158,37 @@ func printData() {
 	} else {
 		fmt.Println("Results All: ", results)
 	}
+}
+
+func printDataRsus() {
+	var results []Rsus
+
+	err := r.Find(nil).All(&results)
+	if err != nil {
+		// TODO: Do something about the error
+	} else {
+		fmt.Println("Results All: ", results)
+	}
+
+}
+
+func getRsusIDIP(idRsu string) (string, string) {
+	var results []Rsus
+	r.Find(nil).All(&results)
+
+	for index := 0; index < len(results); index++ {
+		if results[index].RsuID == idRsu {
+			RsuNeighbourIdString := results[index].RsuNeighbourId
+			RsuNeighbourIpString := results[index].RsuNeighbourIp
+
+			//tab := strings.Split(results[index].RsuNeighbourId, "/")
+			return RsuNeighbourIdString, RsuNeighbourIpString
+		} else {
+			fmt.Printf("Problem")
+		}
+	}
+	return "", ""
+	//s := strings.Split(results[0].RsuNeighbourId, "/")
+	//test1, test2 := s[0], s[1]
+	//fmt.Println(test1, test2)
 }

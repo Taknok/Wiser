@@ -32,6 +32,8 @@ func postToRsu(idVehicule string, idRsu string, date string) {
 		panic(err)
 	}
 
+	//getRsusIDIP(idRsu)
+
 	//handle multiple RSU
 	for index := -1; index < 1; index++ {
 
