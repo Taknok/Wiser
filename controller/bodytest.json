@@ -1,10 +1,14 @@
 {
     "apiVersion":"1.0",
     "typeOfVehicule":"car",
-    "idVehicule":"1234",
-    "idRsu":"1",
+    "idVehicule":"123344",
+    "idRsu":"2",
     "date":"2017-11-06T16:34:41:000Z",
     "params":{
-        "speed":"30"
+        "speed":"10",
+        "coolant_temp" :"23",
+        "rpm" :         "2000",
+        "fuelPressure" :"12"
+
     }
 }

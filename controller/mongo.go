@@ -3,9 +3,11 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net"
 
-	"labix.org/v2/mgo"
+	"gopkg.in/mgo.v2"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -25,34 +27,42 @@ type Cars struct {
 	Date           string
 	Speed          int
 	Stop           string
+	Coolant_temp   string
+	FuelPressure   string
+	Rpm            string
 }
 
 type Rsus struct {
 	ID             bson.ObjectId `bson:"_id,omitempty"`
 	RsuID          string
 	RsuIP          string
-	localisation   string
+	Localisation   string
 	RsuNeighbourId string
 	RsuNeighbourIp string
 }
 
 func mongoDatabase() {
-	session, err = mgo.Dial("127.0.0.1")
-	if err != nil {
-		panic(err)
-	}
+	//URI without ssl=true
+	var mongoURI = "mongodb://wiser:wiser@wiser-shard-00-00-huwwu.mongodb.net:27017,wiser-shard-00-01-huwwu.mongodb.net:27017,wiser-shard-00-02-huwwu.mongodb.net:27017/test?replicaSet=wiser-shard-0&authSource=admin"
+	dialInfo, err := mgo.ParseURL(mongoURI)
 
-	//defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
+	//Below part is similar to above.
+	tlsConfig := &tls.Config{}
+	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		return conn, err
+	}
+	session, _ := mgo.DialWithInfo(dialInfo)
+
+	// Collection WISER/ carsinfo
+	c = session.DB("WISER").C("carsinfo")
+
 	if IsDrop {
-		err = session.DB("WISER").DropDatabase()
+		//err = session.DB("WISER").DropDatabase()
 		if err != nil {
 			panic(err)
 		}
 	}
-
-	// Collection WISER/ carsinfo
-	c = session.DB("WISER").C("carsinfo")
 
 	// Index  Key in min !
 	indexCars := mgo.Index{
@@ -86,18 +96,17 @@ func mongoDatabase() {
 	}
 
 	//insert RSU info
-	err = r.Insert(&Rsus{RsuID: "1", RsuIP: "192.168.1.0", localisation: "1", RsuNeighbourId: "2/3/", RsuNeighbourIp: "192.168.1.1/192.168.1.2/"})
+	err = r.Insert(&Rsus{RsuID: rsuid, RsuIP: rsuip, Localisation: "1", RsuNeighbourId: "2/3/", RsuNeighbourIp: "192.168.1.1/192.168.1.2/"})
 	if err != nil {
 		panic(err)
 	}
-	//printDataRsus()
+	printDataRsus()
 	//getRsusIDIP("1234")
-
 }
 
-func insertData(speedInt int, idVehicule string, idRsu string, date string, stop string) {
+func insertData(speedInt int, idVehicule string, idRsu string, date string, stop string, coolant_temp string, fuelPressure string, rpm string) {
 	//err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: 21, Stop: "false"})
-	err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: idVehicule, IdRsu: idRsu, Date: date, Speed: speedInt, Stop: stop})
+	err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: idVehicule, IdRsu: idRsu, Date: date, Speed: speedInt, Stop: stop, Coolant_temp: coolant_temp, FuelPressure: fuelPressure, Rpm: rpm})
 	if err != nil {
 		fmt.Printf("Error 2 times same data in DB\n")
 		//panic(err)
@@ -146,11 +155,9 @@ func getRsusIDIP(idRsu string) (string, string) {
 		}
 	}
 	return "", ""
-
 }
 
 /*
-
 	// Insert Datas
 	err = c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: "21", Stop: "false"},
 		&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "34556", Date: "21/10/2018", Speed: "21", Stop: "false"})
@@ -194,3 +201,17 @@ func getRsusIDIP(idRsu string) (string, string) {
 	}
 	fmt.Println("Results All: ", results)
 */
+/*
+	session, err = mgo.Dial("127.0.0.1")
+	if err != nil {
+		panic(err)
+	}
+
+	//defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	if IsDrop {
+		err = session.DB("WISER").DropDatabase()
+		if err != nil {
+			panic(err)
+		}
+	}*/

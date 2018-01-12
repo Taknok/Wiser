@@ -13,7 +13,10 @@ import (
 )
 
 type params struct {
-	Speed string
+	Speed        string
+	Coolant_temp string
+	Rpm          string
+	FuelPressure string
 }
 
 type carsInfo struct {
@@ -23,6 +26,18 @@ type carsInfo struct {
 	IdRsu          string
 	Date           string
 	Params         params
+}
+
+type stopInfo struct {
+	ApiVersion     string
+	TypeOfVehicule string
+	IdVehicule     string
+	Date           string
+	Stop           actions
+}
+
+type actions struct {
+	Strop string
 }
 
 func handleRsu(rw http.ResponseWriter, req *http.Request) {
@@ -42,7 +57,21 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	//Intelligence algo
-	go intelligence(speedInt, t.IdVehicule, t.IdRsu, t.Date)
+	go intelligence(speedInt, t.IdVehicule, t.IdRsu, t.Date, t.Params.Coolant_temp, t.Params.FuelPressure, t.Params.Rpm)
+}
+
+func handleWebStop(rw http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	var s stopInfo
+	err := decoder.Decode(&s)
+	if err != nil {
+		panic(err)
+	}
+	defer req.Body.Close()
+	log.Println(s)
+
+	//webstop
+	go postFromWeb(s.IdVehicule, s.Date)
 }
 
 func main() {
@@ -53,6 +82,8 @@ func main() {
 	//Router
 	router := mux.NewRouter()
 	router.HandleFunc("/wiser/controller/{idrsu}/cars", handleRsu)
+	router.HandleFunc("/wiser/controller/cars/stop", handleWebStop)
+
 	fmt.Println("listenning on port 8082")
 
 	log.Fatal(http.ListenAndServe(":8082", router))

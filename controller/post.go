@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 )
 
-func postToRsu(idVehicule string, idRsu string, date string) {
+func postToRsu(idVehicule string, idRsu string, ipRsu string, date string) {
 
 	apiVersion := "1.0"
 	//date := time.Now().Format(time.RFC3339)
@@ -32,36 +31,37 @@ func postToRsu(idVehicule string, idRsu string, date string) {
 	}
 
 	//handle multiple RSU
-	rsuIds, rsuIps := getRsusIDIP(idRsu)
+	//rsuIds, rsuIps := getRsusIDIP(idRsu)
 
-	rsuIdsstringsplit := strings.Split(rsuIds, "/")
-	rsuIpsstringsplit := strings.Split(rsuIps, "/")
+	//rsuIdsstringsplit := strings.Split(rsuIds, "/")
+	//rsuIpsstringsplit := strings.Split(rsuIps, "/")
 	//fmt.Println(rsuIdsstringsplit)
 	//fmt.Println(rsuIpsstringsplit)
 
 	//handle multiple RSU
-	for index := 0; index < len(rsuIdsstringsplit); index++ {
+	//for index := 0; index < len(rsuIdsstringsplit); index++ {
 
-		url := "http://" + rsuIpsstringsplit[index] + ":8080/wiser/rsu/" + rsuIdsstringsplit[index] + "/cars/stop"
-		fmt.Println("URL:>", url)
+	//url := "http://" + rsuIpsstringsplit[index] + ":8080/wiser/rsu/" + rsuIdsstringsplit[index] + "/cars/stop"
+	url := "http://" + ipRsu + ":8080/wiser/rsu/" + idRsu + "/cars/stop"
+	fmt.Println("URL:>", url)
 
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-		req.Header.Set("X-Custom-Header", "myvalue")
-		req.Header.Set("Content-Type", "application/json")
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req.Header.Set("X-Custom-Header", "myvalue")
+	req.Header.Set("Content-Type", "application/json")
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Printf("Error try send to RSU\n")
-			panic(err)
-		}
-		defer resp.Body.Close()
-
-		fmt.Println("response Status:", resp.Status)
-		fmt.Println("response Headers:", resp.Header)
-		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("response Body:", string(body))
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Error try send to RSU\n")
+		panic(err)
 	}
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response Body:", string(body))
+	//}
 }
 
 func postToWeb(idVehicule string, idRsu string, date string) {
@@ -83,7 +83,7 @@ func postToWeb(idVehicule string, idRsu string, date string) {
 				 }
 		}`)
 
-	url := "http://localhost:8080/wiser/web/cars/stop"
+	url := "http://" + webip + ":8080/wiser/web/cars/stop"
 	fmt.Println("URL:>", url)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
