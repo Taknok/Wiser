@@ -5,7 +5,6 @@ git clone --recursive https://github.com/Taknok/Wiser.git
 ```
 or
 ```
-
 git clone https://github.com/Taknok/Wiser.git
 git submodule update --init --recursive
 ```
