@@ -5,6 +5,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net"
 
 	"gopkg.in/mgo.v2"
@@ -25,7 +26,7 @@ type Cars struct {
 	IdVehicule     string
 	IdRsu          string
 	Date           string
-	Speed          int
+	Speed          string
 	Stop           string
 	Coolant_temp   string
 	FuelPressure   string
@@ -66,7 +67,7 @@ func mongoDatabase() {
 
 	// Index  Key in min !
 	indexCars := mgo.Index{
-		Key:        []string{"idvehicule", "idrsu", "date"},
+		Key:        []string{"idvehicule"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
@@ -104,9 +105,25 @@ func mongoDatabase() {
 	//getRsusIDIP("1234")
 }
 
-func insertData(speedInt int, idVehicule string, idRsu string, date string, stop string, coolant_temp string, fuelPressure string, rpm string) {
-	//err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: "123", IdRsu: "3455", Date: "21/10/2017", Speed: 21, Stop: "false"})
-	err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: idVehicule, IdRsu: idRsu, Date: date, Speed: speedInt, Stop: stop, Coolant_temp: coolant_temp, FuelPressure: fuelPressure, Rpm: rpm})
+func updateData(speedString string, idVehicule string, idRsu string, date string, stop string, coolant_temp string, fuelPressure string, rpm string) {
+	log.Println("===========>update data")
+	err = c.Update(bson.M{"idvehicule": idVehicule}, bson.M{"$set": bson.M{"date": date, "speed": speedString, "stop": stop, "coolant_temp": coolant_temp, "fuelPressure": fuelPressure, "rpm": rpm}})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func updateDataPostFromWeb(idVehicule string, date string, stop string) {
+	log.Println("===========>update postfromweb")
+	err = c.Update(bson.M{"idvehicule": idVehicule}, bson.M{"$set": bson.M{"date": date, "stop": stop}})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func insertData(speedString string, idVehicule string, idRsu string, date string, stop string, coolant_temp string, fuelPressure string, rpm string) {
+
+	err := c.Insert(&Cars{TypeOfVehicule: "car", IdVehicule: idVehicule, IdRsu: idRsu, Date: date, Speed: speedString, Stop: stop, Coolant_temp: coolant_temp, FuelPressure: fuelPressure, Rpm: rpm})
 	if err != nil {
 		fmt.Printf("Error 2 times same data in DB\n")
 		//panic(err)

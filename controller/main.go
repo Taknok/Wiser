@@ -33,11 +33,11 @@ type stopInfo struct {
 	TypeOfVehicule string
 	IdVehicule     string
 	Date           string
-	Stop           actions
+	Actions        actions
 }
 
 type actions struct {
-	Strop string
+	Stop string
 }
 
 func handleRsu(rw http.ResponseWriter, req *http.Request) {
@@ -48,7 +48,7 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 	defer req.Body.Close()
-	log.Println(t)
+	//log.Println(t)
 
 	//Convert string to int
 	speedInt, err := strconv.Atoi(t.Params.Speed)
@@ -64,11 +64,11 @@ func handleWebStop(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	var s stopInfo
 	err := decoder.Decode(&s)
+	log.Println(s)
 	if err != nil {
 		panic(err)
 	}
 	defer req.Body.Close()
-	log.Println(s)
 
 	//webstop
 	go postFromWeb(s.IdVehicule, s.Date)

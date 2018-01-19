@@ -3,32 +3,32 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-var webip string = "192.168.0.1:8080"
-var obuip string = "127.0.0.1:8083"
+var webip string = "127.0.0.1:8082"
+var obuip string = "192.168.137.144:8081"
 var MyIdRsu string = "1"
 
 type params_info struct {
-	Speed string
+	Speed        string
 	Coolant_temp string
-	Rpm string
-	FuelPressure string	
+	Rpm          string
+	FuelPressure string
 }
 
 type params_stop struct {
 	Speed string
 }
 
-type action_stop struct {
+type actions_stop struct {
 	Stop string
 }
 
@@ -46,9 +46,8 @@ type carsStop struct {
 	IdVehicule     string
 	Date           string
 	Params         params_stop
-	Action		   action_stop
+	Actions        actions_stop
 }
-
 
 func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 
@@ -56,15 +55,13 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	var t carsInfo
 	err := decoder.Decode(&t)
-	
+
 	if err != nil {
 		panic(err)
 	}
-	log.Println("JSON = ",t)
-
+	log.Println("JSON = ", t)
 
 	// SECURITE
-
 
 	// MODIFIE JSON
 	var jsonStr = []byte(`{
@@ -84,8 +81,7 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 				 }
 		}`)
 
-
-	url := "http://"+webip+"/wiser/controller/" +MyIdRsu+"/cars"
+	url := "http://" + webip + "/wiser/controller/" + MyIdRsu + "/cars"
 	fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -111,12 +107,11 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	var t carsStop
 	err := decoder.Decode(&t)
-	
+
 	if err != nil {
 		panic(err)
 	}
-	log.Println("JSON = ",t)
-
+	log.Println("JSON = ", t)
 
 	// SECURITE
 	// if t.Action.Stop != "true" {
@@ -132,12 +127,11 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 		"params":{
 				 },
 		"actions":{
-				  "stop":"` + t.Action.Stop + `"
+				  "stop":"` + t.Actions.Stop + `"
 				 }
 		}`)
 
-
-	url := "http://"+obuip+"/wiser/cars/stop"
+	url := "http://" + obuip + "/wiser/cars/stop"
 	fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -158,9 +152,9 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	log.Println(" -- MAIN --")	
+	log.Println(" -- MAIN --")
 	router := mux.NewRouter()
 	router.HandleFunc("/wiser/rsu", forward2Controller)
 	router.HandleFunc("/wiser/rsu/{idrsu}/cars/stop", handleStop)
-	log.Fatal(http.ListenAndServe(":8082", router))
+	log.Fatal(http.ListenAndServe(":8083", router))
 }

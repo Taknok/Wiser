@@ -83,7 +83,7 @@ func postToWeb(idVehicule string, idRsu string, date string) {
 				 }
 		}`)
 
-	url := "http://" + webip + "/wiser/web/cars/stop"
+	url := webip + "/wiser/web/cars/stop"
 	fmt.Println("URL:>", url)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
