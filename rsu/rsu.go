@@ -24,10 +24,6 @@ type params_stop struct {
 	Speed string
 }
 
-type action_info struct {
-	Stop string
-}
-
 type action_stop struct {
 	Stop string
 }
@@ -36,17 +32,14 @@ type carsInfo struct {
 	ApiVersion     string
 	TypeOfVehicule string
 	IdVehicule     string
-	IdRsu          string
 	Date           string
 	Params         params_info
-	Action		   action_info
 }
 
 type carsStop struct {
 	ApiVersion     string
 	TypeOfVehicule string
 	IdVehicule     string
-	IdRsu          string
 	Date           string
 	Params         params_stop
 	Action		   action_stop
