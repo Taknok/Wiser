@@ -3,18 +3,25 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"bytes"
+	"fmt"
+	"io/ioutil"
 
 	"github.com/gorilla/mux"
 )
 
 type params struct {
 	Speed string
+	Coolant_temp string
+	Rpm string
+	FuelPressure string	
+}
+
+type action struct {
+	Stop string
 }
 
 type carsInfo struct {
@@ -24,6 +31,7 @@ type carsInfo struct {
 	IdRsu          string
 	Date           string
 	Params         params
+	Action		   action
 }
 
 func forward2Controller(rw http.ResponseWriter, req *http.Request) {
@@ -32,28 +40,37 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	var t carsInfo
 	err := decoder.Decode(&t)
-
+	
 	if err != nil {
 		panic(err)
 	}
-	log.Println("JSON = ", t)
+	log.Println("JSON = ",t)
+
 
 	// SECURITE
 
+
 	// MODIFIE JSON
-	//MyIdRsu := "MyIdRsu"
+	MyIdRsu := "MyIdRsu"
 	var jsonStr = []byte(`{
 		"apiVersion":"` + t.ApiVersion + `",
 		"typeOfVehicule":"car",
 		"idVehicule":"` + t.IdVehicule + `",
-		"idRsu":"` + t.IdRsu + `",
+		"idRsu":"` + MyIdRsu + `",
 		"date":"` + t.Date + `",
 		"params":{
-			"speed":"` + t.Params.Speed + `"
+				"speed":"` + t.Params.Speed + `",
+				"coolant_temp": "` + t.Params.Coolant_temp + `",
+				"rpm":"` + t.Params.Rpm + `",
+				"fuelPressure":"` + t.Params.FuelPressure + `"
+				 },
+		"actions":{
+				  "stop":"false"
 				 }
 		}`)
 
-	url := "http://localhost:8082/wiser/controller/" + t.IdRsu + "/cars"
+
+	url := "http://192.168.43.35:8082/wiser/controller/" +MyIdRsu+"/cars"
 	fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -74,8 +91,8 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	log.Println(" -- MAIN --")
+	log.Println(" -- MAIN --")	
 	router := mux.NewRouter()
-	router.HandleFunc("/wiser/rsu", forward2Controller)
-	log.Fatal(http.ListenAndServe(":8081", router))
+	router.HandleFunc("/wiser/cars", forward2Controller)
+	log.Fatal(http.ListenAndServe(":8083", router))
 }
