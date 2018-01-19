@@ -13,6 +13,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var MyIdRsu = "MyIdRsu"
+
 type params_info struct {
 	Speed string
 	Coolant_temp string
@@ -63,7 +65,6 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 
 
 	// MODIFIE JSON
-	MyIdRsu := "MyIdRsu"
 	var jsonStr = []byte(`{
 		"apiVersion":"` + t.ApiVersion + `",
 		"typeOfVehicule":"car",
@@ -124,7 +125,7 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 		"apiVersion":"` + t.ApiVersion + `",
 		"typeOfVehicule":"car",
 		"idVehicule":"` + t.IdVehicule + `",
-		"idRsu":"` + t.IdRsu + `",
+		"idRsu":"` + MyIdRsu + `",
 		"date":"` + t.Date + `",
 		"params":{
 				 },
