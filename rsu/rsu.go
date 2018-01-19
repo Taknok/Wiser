@@ -13,7 +13,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var MyIdRsu = "MyIdRsu"
+var webip string = "192.168.0.1:8080"
+var obuip string = "127.0.0.1:8083"
+var MyIdRsu string = "1"
 
 type params_info struct {
 	Speed string
@@ -83,7 +85,7 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 		}`)
 
 
-	url := "http://192.168.43.35:8082/wiser/controller/" +MyIdRsu+"/cars"
+	url := "http://"+webip+"/wiser/controller/" +MyIdRsu+"/cars"
 	fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -135,7 +137,7 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 		}`)
 
 
-	url := "http://localhost:8083/wiser/cars/stop"
+	url := "http://"+obuip+"/wiser/cars/stop"
 	fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
