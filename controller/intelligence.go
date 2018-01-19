@@ -1,12 +1,12 @@
 package main
 
-var MAXSPEED int = 15
+var MAXSPEED int = 30
 
 func intelligence(speedInt int, idVehicule string, idRsu string, date string, coolant_temp string, fuelPressure string, rpm string) {
 	//intelligence
 	if speedInt > MAXSPEED {
 		go postToRsu(idVehicule, idRsu, rsuip, date)
-		go postToWeb(idVehicule, idRsu, date)
+		//go postToWeb(idVehicule, idRsu, date)
 
 		//insert DB
 		stop := "true"

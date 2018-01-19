@@ -42,7 +42,7 @@ func postToRsu(idVehicule string, idRsu string, ipRsu string, date string) {
 	//for index := 0; index < len(rsuIdsstringsplit); index++ {
 
 	//url := "http://" + rsuIpsstringsplit[index] + ":8080/wiser/rsu/" + rsuIdsstringsplit[index] + "/cars/stop"
-	url := "http://" + ipRsu + ":8080/wiser/rsu/" + idRsu + "/cars/stop"
+	url := "http://" + ipRsu + "/wiser/rsu/" + idRsu + "/cars/stop"
 	fmt.Println("URL:>", url)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -83,7 +83,7 @@ func postToWeb(idVehicule string, idRsu string, date string) {
 				 }
 		}`)
 
-	url := "http://" + webip + ":8080/wiser/web/cars/stop"
+	url := "http://" + webip + "/wiser/web/cars/stop"
 	fmt.Println("URL:>", url)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
