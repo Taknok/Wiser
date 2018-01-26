@@ -43,7 +43,7 @@ func postToRsu(idVehicule string, idRsu string, ipRsu string, date string) {
 
 	//url := "http://" + rsuIpsstringsplit[index] + ":8080/wiser/rsu/" + rsuIdsstringsplit[index] + "/cars/stop"
 	url := "http://" + ipRsu + "/wiser/rsu/" + idRsu + "/cars/stop"
-	fmt.Println("URL:>", url)
+	//fmt.Println("URL:>", url)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Custom-Header", "myvalue")

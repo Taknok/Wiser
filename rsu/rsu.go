@@ -10,6 +10,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/fatih/color"
+
 	"github.com/gorilla/mux"
 )
 
@@ -50,6 +52,7 @@ type carsStop struct {
 }
 
 func forward2Controller(rw http.ResponseWriter, req *http.Request) {
+	color.Green("Received Data from OBU, send it to controller")
 
 	//  DECODAGE
 	decoder := json.NewDecoder(req.Body)
@@ -82,7 +85,7 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 		}`)
 
 	url := "http://" + webip + "/wiser/controller/" + MyIdRsu + "/cars"
-	fmt.Println("URL:>", url)
+	//fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Custom-Header", "myvalue")
@@ -95,14 +98,14 @@ func forward2Controller(rw http.ResponseWriter, req *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
+	//fmt.Println("response Status:", resp.Status)
+	//fmt.Println("response Headers:", resp.Header)
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
 }
 
 func handleStop(rw http.ResponseWriter, req *http.Request) {
-
+	color.Red("STOP received from controller")
 	//  DECODAGE
 	decoder := json.NewDecoder(req.Body)
 	var t carsStop
@@ -132,7 +135,7 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 		}`)
 
 	url := "http://" + obuip + "/wiser/cars/stop"
-	fmt.Println("URL:>", url)
+	//fmt.Println("URL:>", url)
 
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Custom-Header", "myvalue")
@@ -145,10 +148,10 @@ func handleStop(rw http.ResponseWriter, req *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
+	//fmt.Println("response Status:", resp.Status)
+	//fmt.Println("response Headers:", resp.Header)
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("response Body:", string(body))
+	//fmt.Println("response Body:", string(body))
 }
 
 func main() {

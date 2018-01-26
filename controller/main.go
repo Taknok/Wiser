@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/fatih/color"
+
 	"github.com/gorilla/mux"
 )
 
@@ -41,6 +43,7 @@ type actions struct {
 }
 
 func handleRsu(rw http.ResponseWriter, req *http.Request) {
+	color.Red("Received data from Rsu")
 	decoder := json.NewDecoder(req.Body)
 	var t carsInfo
 	err := decoder.Decode(&t)
@@ -61,6 +64,8 @@ func handleRsu(rw http.ResponseWriter, req *http.Request) {
 }
 
 func handleWebStop(rw http.ResponseWriter, req *http.Request) {
+	color.Red("Received stop From Web")
+	//log.Println("handleWebSTOP")
 	decoder := json.NewDecoder(req.Body)
 	var s stopInfo
 	err := decoder.Decode(&s)
